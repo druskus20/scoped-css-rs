@@ -1,13 +1,7 @@
-# scoped-css-rs
-
-Scoped css with a macro 
-
-
-```rs
 use scoped_css::style;
 
 fn main() {
-    let (class, style) = style!(
+    let (button_class, button_css) = style!(
         r#"
         & {
             background-color: #007bff;
@@ -36,6 +30,18 @@ fn main() {
         }
     "#
     );
-}
-```
 
+    let html = maud::html! {
+        style { (button_css) }
+        div class = (button_class) {
+            h2 class = "title" { "Click Me!" }
+            h2 class = "title" { "Not a title" }
+            p { "This is a simple button." }
+        }
+    };
+
+    println!("Generated HTML:");
+    println!("--------------------------");
+    println!("{}", html.into_string());
+    println!("--------------------------");
+}
