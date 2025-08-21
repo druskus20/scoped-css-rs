@@ -1,3 +1,14 @@
+# scoped-css-rs
+
+> [WARN]
+> Do not use this.
+
+However. 
+
+It works (more or less):
+
+
+```rs
 use scoped_css_core::style;
 
 fn my_random_color() -> String {
@@ -27,3 +38,4 @@ fn main() {
     println!("class: {class}");
     println!("style: {sytle}");
 }
+```
