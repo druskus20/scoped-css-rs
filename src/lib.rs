@@ -1,7 +1,7 @@
 use lightningcss::stylesheet::{ParserOptions, PrinterOptions, StyleSheet};
 use lightningcss::targets::Targets;
-use sha2::{Digest, Sha256};
 
+#[macro_export]
 macro_rules! style {
     ($css:literal $(, $($name:ident = $value:expr),* )?) => {{
         // Replace [[...]] with {…} for format!
@@ -19,6 +19,7 @@ macro_rules! style {
             s
         };
 
+        use sha2::{Digest, Sha256};
         // Generate deterministic class name from hash
         let mut hasher = sha2::Sha256::new();
         hasher.update(formatted_css.as_bytes());
@@ -29,13 +30,13 @@ macro_rules! style {
         let final_css_with_class = formatted_css.replace("&", &format!(".{}", class_name));
 
         // Process with lightningcss
-        let processed_css = process_css_with_lightning(&final_css_with_class).unwrap();
+        let processed_css = $crate::process_css_with_lightning(&final_css_with_class).unwrap();
 
         (class_name, processed_css)
     }};
 }
 
-fn process_css_with_lightning(css: &str) -> Result<String, Box<dyn std::error::Error>> {
+pub fn process_css_with_lightning(css: &str) -> Result<String, Box<dyn std::error::Error>> {
     let css_static = Box::leak(css.to_string().into_boxed_str());
 
     let stylesheet = StyleSheet::parse(
@@ -51,7 +52,7 @@ fn process_css_with_lightning(css: &str) -> Result<String, Box<dyn std::error::E
     )?;
 
     let printer_options = PrinterOptions {
-        minify: true,
+        minify: false,
         source_map: None,
         project_root: None,
         targets: Targets::default(),

@@ -15,6 +15,3 @@ lightningcss = "1.0.0-alpha.67"
 
 [dev-dependencies]
 maud = "0.27"
-
-[lib]
-proc-macro = true
