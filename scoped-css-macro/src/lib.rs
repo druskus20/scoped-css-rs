@@ -44,8 +44,7 @@ pub fn style(input: TokenStream) -> TokenStream {
             let scoped_css = raw_css.replace("&", &format!(".{}", class));
             let css = scoped_css_core::process_css_with_lightning(&scoped_css)
                 .expect("CSS parsing failed");
-            //(class, css)
-    (Box::leak(class.into_boxed_str()), Box::leak(css.into_boxed_str()))
+            (class, css)
         }
     };
     expanded.into()
