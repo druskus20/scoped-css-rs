@@ -1,20 +1,2 @@
-[package]
-name = "scoped-css"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
-
-
-[dependencies]
-proc-macro2 = "1.0"
-quote = "1.0"
-syn = { version = "2.0", features = ["full"] }
-proc-macro-error = "1.0"
-sha2 = "0.10"
-lightningcss = "1.0.0-alpha.67"
-
-[dev-dependencies]
-maud = "0.27"
-
-[lib]
-proc-macro = true
+[workspace]
+members = ["scoped-css-macro", "scoped-css-core", "scoped-css-tests"]

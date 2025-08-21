@@ -1,0 +1,9 @@
+[package]
+name = "scoped-css-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+scoped-css-macro = { path = "../scoped-css-macro" }
+sha2 = "0.10"
+lightningcss = "1.0.0-alpha.67"
