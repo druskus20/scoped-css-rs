@@ -4,6 +4,8 @@ use lightningcss::{
     targets::Targets,
 };
 
+pub use scoped_css_macro::style;
+
 pub mod macros {
     pub use scoped_css_macro::style;
 }

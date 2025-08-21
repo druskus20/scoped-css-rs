@@ -1,4 +1,4 @@
-use scoped_css_core::macros::style;
+use scoped_css_core::style;
 
 fn main() {
     let red = "#ff0000";
