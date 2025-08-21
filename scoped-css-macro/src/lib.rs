@@ -3,7 +3,7 @@ use quote::quote;
 
 #[proc_macro]
 pub fn style(input: TokenStream) -> TokenStream {
-    use syn::{LitStr, parse_macro_input};
+    use syn::{Expr, LitStr, parse_macro_input};
 
     let css_lit = parse_macro_input!(input as LitStr);
     let css_str = css_lit.value();
@@ -19,15 +19,16 @@ pub fn style(input: TokenStream) -> TokenStream {
             + start
             + 2;
 
-        // Escape braces in the chunk before [[IDENT]]
+        // Escape braces in the chunk before [[ ... ]]
         let chunk = rest[..start].replace("{", "{{").replace("}", "}}");
         fmt_str.push_str(&chunk);
         fmt_str.push_str("{}"); // placeholder
 
-        let ident = &rest[start + 2..end];
-        let ident = ident.trim();
-        let ident = syn::Ident::new(ident, proc_macro2::Span::call_site());
-        args.push(ident);
+        // Parse the placeholder as a full Rust expression
+        let expr_str = &rest[start + 2..end];
+        let expr: Expr =
+            syn::parse_str(expr_str.trim()).expect("failed to parse expression inside [[ ]]");
+        args.push(expr);
 
         rest = &rest[end + 2..];
     }
@@ -37,8 +38,6 @@ pub fn style(input: TokenStream) -> TokenStream {
 
     let expanded = quote! {
         {
-            //let css = format!(#fmt_str, #( #args ),*);
-
             let raw_css = format!(#fmt_str, #( #args ),*);
             let class = scoped_css_core::generate_class_name(&raw_css);
             let scoped_css = raw_css.replace("&", &format!(".{}", class));

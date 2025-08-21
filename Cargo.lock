@@ -730,7 +730,7 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
 name = "scoped-css-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "lightningcss",
  "scoped-css-macro",
@@ -739,7 +739,7 @@ dependencies = [
 
 [[package]]
 name = "scoped-css-macro"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -749,7 +749,7 @@ dependencies = [
 
 [[package]]
 name = "scoped-css-tests"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "scoped-css-core",
 ]

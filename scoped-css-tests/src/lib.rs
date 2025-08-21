@@ -83,4 +83,45 @@ mod tests {
         assert!(css.contains("var(--primary-color)"));
         assert!(css.contains("007bff"));
     }
+
+    mod colors {
+        #[allow(dead_code)]
+        pub fn primary() -> &'static str {
+            "#007bff"
+        }
+
+        #[allow(dead_code)]
+        pub const HOVER: &str = "#0056b3";
+    }
+
+    #[test]
+    fn test_css_expressions() {
+        mod colors {
+            pub fn primary() -> &'static str {
+                "#007bff"
+            }
+
+            pub const HOVER: &str = "#0056b3";
+        }
+
+        let (_class_name, css) = style!(
+            r#"
+        & {
+            --primary-color: [[colors::primary()]];
+            --hover-color: [[colors::HOVER]];
+            background-color: var(--primary-color);
+        }
+        &:hover {
+            background-color: var(--hover-color);
+        }
+        "#
+        );
+
+        dbg!(&css);
+
+        assert!(css.contains("--primary-color"));
+        assert!(css.contains("var(--primary-color)"));
+        assert!(css.contains("#007bff")); // from the function
+        assert!(css.contains("#0056b3")); // from the const
+    }
 }
