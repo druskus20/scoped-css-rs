@@ -1,0 +1,7 @@
+[package]
+name = "scoped-css-tests"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+scoped-css-core = { path = "../scoped-css-core" }
