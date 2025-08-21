@@ -1,12 +1,16 @@
-use proc_macro::TokenStream;
+use proc_macro::{Literal, TokenStream, TokenTree};
 use quote::quote;
 
 #[proc_macro]
 pub fn style(input: TokenStream) -> TokenStream {
-    use syn::{Expr, LitStr, parse_macro_input};
+    // expect exactly one literal token
+    let css_lit = match input.into_iter().next() {
+        Some(TokenTree::Literal(lit)) => lit,
+        _ => panic!("expected a string literal as input"),
+    };
 
-    let css_lit = parse_macro_input!(input as LitStr);
-    let css_str = css_lit.value();
+    // convert literal to string, handling raw strings automatically
+    let css_str = parse_literal_to_string(&css_lit);
 
     let mut fmt_str = String::new();
     let mut args = Vec::new();
@@ -19,21 +23,21 @@ pub fn style(input: TokenStream) -> TokenStream {
             + start
             + 2;
 
-        // Escape braces in the chunk before [[ ... ]]
-        let chunk = rest[..start].replace("{", "{{").replace("}", "}}");
-        fmt_str.push_str(&chunk);
-        fmt_str.push_str("{}"); // placeholder
+        // escape braces and append chunk
+        let chunk = &rest[..start];
+        fmt_str.push_str(&chunk.replace("{", "{{").replace("}", "}}"));
+        fmt_str.push_str("{}");
 
-        // Parse the placeholder as a full Rust expression
+        // Everything inside [[...]] is treated as a raw Rust expression
         let expr_str = &rest[start + 2..end];
-        let expr: Expr =
-            syn::parse_str(expr_str.trim()).expect("failed to parse expression inside [[ ]]");
-        args.push(expr);
+        let expr_tokens: proc_macro2::TokenStream = expr_str
+            .parse()
+            .expect("failed to parse expression inside [[ ]]");
+        args.push(expr_tokens);
 
         rest = &rest[end + 2..];
     }
 
-    // Escape braces in the final remainder
     fmt_str.push_str(&rest.replace("{", "{{").replace("}", "}}"));
 
     let expanded = quote! {
@@ -46,5 +50,18 @@ pub fn style(input: TokenStream) -> TokenStream {
             (class, css)
         }
     };
+
     expanded.into()
+}
+
+/// convert proc_macro::Literal to actual string content
+fn parse_literal_to_string(lit: &Literal) -> String {
+    let s = lit.to_string();
+    if let Some(stripped) = s.strip_prefix("r#\"").and_then(|s| s.strip_suffix("\"#")) {
+        stripped.to_string()
+    } else if let Some(stripped) = s.strip_prefix('"').and_then(|s| s.strip_suffix('"')) {
+        stripped.to_string()
+    } else {
+        panic!("expected a string literal")
+    }
 }
